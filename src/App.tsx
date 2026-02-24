@@ -23,7 +23,10 @@ import {
   Mail,
   Sun,
   Moon,
-  Languages
+  Languages,
+  ChevronDown,
+  Search,
+  Star
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
@@ -128,6 +131,10 @@ const TRANSLATIONS = {
     user: "Você",
     ai_name: "BRC Conectar AI",
     operator: "Operadora (Angola/Global)",
+    node_selection: "Seleção de Nó",
+    search_nodes: "Buscar por nome ou país...",
+    favorites: "Favoritos",
+    all_nodes: "Todos os Nós",
     advisor_instruction: "Você é o Consultor de Privacidade BRC Conectar, um especialista em liberdade na internet, VPNs, criptografia e contorno de censura, com foco especial em redes de Angola (Unitel, Movicel, Africell). Forneça conselhos concisos, técnicos e úteis sobre como otimizar a conexão nessas redes. Mantenha um tom profissional e seguro. Se o usuário pedir suporte ou contato do desenvolvedor, informe o e-mail: borgeruicandala@gmail.com."
   },
   en: {
@@ -163,6 +170,10 @@ const TRANSLATIONS = {
     user: "You",
     ai_name: "BRC Conectar AI",
     operator: "Operator (Angola/Global)",
+    node_selection: "Node Selection",
+    search_nodes: "Search by name or country...",
+    favorites: "Favorites",
+    all_nodes: "All Nodes",
     advisor_instruction: "You are the BRC Conectar Privacy Advisor, an expert in internet freedom, VPNs, encryption, and censorship circumvention, with a special focus on Angolan networks (Unitel, Movicel, Africell). Provide concise, technical, and helpful advice on how to optimize connections on these networks. Maintain a professional and secure tone. If the user asks for support or developer contact, provide the email: borgeruicandala@gmail.com."
   },
   es: {
@@ -198,6 +209,10 @@ const TRANSLATIONS = {
     user: "Tú",
     ai_name: "BRC Conectar AI",
     operator: "Operador (Angola/Global)",
+    node_selection: "Selección de Nodo",
+    search_nodes: "Buscar por nombre o país...",
+    favorites: "Favoritos",
+    all_nodes: "Todos los Nodos",
     advisor_instruction: "Eres el Asesor de Privacidad de BRC Conectar, experto en libertad en internet, VPN, cifrado y elusión de censura, con especial atención a las redes angoleñas (Unitel, Movicel, Africell). Proporciona consejos concisos, técnicos y útiles sobre cómo optimizar las conexiones en estas redes. Mantén un tono profesional y seguro. Si el usuario solicita soporte o contacto del desarrollador, proporciona el correo electrónico: borgeruicandala@gmail.com."
   },
   fr: {
@@ -233,6 +248,10 @@ const TRANSLATIONS = {
     user: "Vous",
     ai_name: "BRC Conectar AI",
     operator: "Opérateur (Angola/Global)",
+    node_selection: "Sélection de Nœud",
+    search_nodes: "Rechercher par nom ou pays...",
+    favorites: "Favoris",
+    all_nodes: "Tous les Nœuds",
     advisor_instruction: "Vous êtes le conseiller en confidentialité BRC Conectar, expert en liberté sur Internet, VPN, chiffrement et contournement de la censure, avec un accent particulier sur les réseaux angolais (Unitel, Movicel, Africell). Fournissez des conseils concis, techniques et utiles sur la façon d'optimiser les connexions sur ces réseaux. Maintenez un ton professionnel et sécurisé. Si l'utilisateur demande de l'aide ou le contact du développeur, fournissez l'e-mail : borgeruicandala@gmail.com."
   },
   de: {
@@ -268,6 +287,10 @@ const TRANSLATIONS = {
     user: "Sie",
     ai_name: "BRC Conectar AI",
     operator: "Betreiber (Angola/Global)",
+    node_selection: "Knotenauswahl",
+    search_nodes: "Suche nach Name oder Land...",
+    favorites: "Favoriten",
+    all_nodes: "Alle Knoten",
     advisor_instruction: "Sie sind der BRC Conectar Datenschutzberater, ein Experte für Internetfreiheit, VPNs, Verschlüsselung und Zensurumgehung, mit besonderem Fokus auf angolanische Netzwerke (Unitel, Movicel, Africell). Geben Sie prägnante, technische und hilfreiche Ratschläge zur Optimierung von Verbindungen in diesen Netzwerken. Bewahren Sie einen professionellen und sicheren Ton. Wenn der Benutzer nach Support oder Entwicklerkontakt fragt, geben Sie die E-Mail an: borgeruicandala@gmail.com."
   },
   it: {
@@ -303,6 +326,10 @@ const TRANSLATIONS = {
     user: "Tu",
     ai_name: "BRC Conectar AI",
     operator: "Operatore (Angola/Global)",
+    node_selection: "Selezione Nodo",
+    search_nodes: "Cerca per nome o paese...",
+    favorites: "Preferiti",
+    all_nodes: "Tutti i Nodi",
     advisor_instruction: "Sei il consulente per la privacy di BRC Conectar, un esperto di libertà su Internet, VPN, crittografia e elusione della censura, con un focus speciale sulle reti angolane (Unitel, Movicel, Africell). Fornisci consigli concisi, tecnici e utili su come ottimizzare le connessioni su queste reti. Mantieni un tono professionale e sicuro. Se l'utente chiede supporto o il contatto dello sviluppatore, fornisci l'e-mail: borgeruicandala@gmail.com."
   },
   ru: {
@@ -338,6 +365,10 @@ const TRANSLATIONS = {
     user: "Вы",
     ai_name: "BRC Conectar AI",
     operator: "Оператор (Ангола/Глобальный)",
+    node_selection: "Выбор узла",
+    search_nodes: "Поиск по имени или стране...",
+    favorites: "Избранное",
+    all_nodes: "Все узлы",
     advisor_instruction: "Вы — консультант по конфиденциальности BRC Conectar, эксперт в области свободы интернета, VPN, шифрования и обхода цензуры, с особым вниманием к ангольским сетям (Unitel, Movicel, Africell). Дайте краткие, технические и полезные советы по оптимизации соединений в этих сетях. Сохраняйте профессиональный и безопасный тон. Если пользователь запрашивает поддержку или контакт разработчика, укажите адрес электронной почты: borgeruicandala@gmail.com."
   },
   zh: {
@@ -373,6 +404,10 @@ const TRANSLATIONS = {
     user: "您",
     ai_name: "BRC Conectar AI",
     operator: "运营商（安哥拉/全球）",
+    node_selection: "节点选择",
+    search_nodes: "按名称或国家搜索...",
+    favorites: "收藏夹",
+    all_nodes: "所有节点",
     advisor_instruction: "您是 BRC Conectar 隐私顾问，是互联网自由、VPN、加密和审查规避方面的专家，特别关注安哥拉网络（Unitel、Movicel、Africell）。提供有关如何优化这些网络连接的简洁、技术性和有用的建议。保持专业和安全的语气。如果用户请求支持或开发人员联系方式，请提供电子邮件：borgeruicandala@gmail.com。"
   },
   jp: {
@@ -408,6 +443,10 @@ const TRANSLATIONS = {
     user: "あなた",
     ai_name: "BRC Conectar AI",
     operator: "オペレーター (アンゴラ/グローバル)",
+    node_selection: "ノードの選択",
+    search_nodes: "名前または国で検索...",
+    favorites: "お気に入り",
+    all_nodes: "すべてのノード",
     advisor_instruction: "あなたは BRC Conectar プライバシー アドバイザーです。インターネットの自由、VPN、暗号化、検閲回避の専門家であり、特にアンゴラのネットワーク (Unitel、Movicel、Africell) に重点を置いています。これらのネットワークでの接続を最適化する方法について、簡潔で技術的かつ役立つアドバイスを提供してください。プロフェッショナルで安全なトーンを維持してください。ユーザーがサポートや開発者の連絡先を求めた場合は、メールアドレス borgeruicandala@gmail.com を提供してください。"
   }
 };
@@ -529,9 +568,23 @@ export default function App() {
   const [isTyping, setIsTyping] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
+  const [showLanguages, setShowLanguages] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [favorites, setFavorites] = useState<string[]>([]);
+  const [connectionStartTime, setConnectionStartTime] = useState<number | null>(null);
+  const [connectionDuration, setConnectionDuration] = useState(0);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   const t = TRANSLATIONS[lang];
+
+  const toggleFavorite = (e: React.MouseEvent, serverId: string) => {
+    e.stopPropagation();
+    setFavorites(prev => 
+      prev.includes(serverId) 
+        ? prev.filter(id => id !== serverId)
+        : [...prev, serverId]
+    );
+  };
 
   useEffect(() => {
     setChatMessages([
@@ -591,10 +644,23 @@ export default function App() {
     const timer = setTimeout(() => {
       setConnecting(false);
       setConnected(true);
+      setConnectionStartTime(Date.now());
     }, 2000);
     
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (connected && connectionStartTime) {
+      interval = setInterval(() => {
+        setConnectionDuration(Math.floor((Date.now() - connectionStartTime) / 1000));
+      }, 1000);
+    } else {
+      setConnectionDuration(0);
+    }
+    return () => clearInterval(interval);
+  }, [connected, connectionStartTime]);
 
   useEffect(() => {
     // Dynamic server updates when online
@@ -619,11 +685,13 @@ export default function App() {
   const handleConnect = () => {
     if (connected) {
       setConnected(false);
+      setConnectionStartTime(null);
     } else {
       setConnecting(true);
       setTimeout(() => {
         setConnecting(false);
         setConnected(true);
+        setConnectionStartTime(Date.now());
       }, 2000);
     }
   };
@@ -662,12 +730,9 @@ export default function App() {
           <div className="flex items-center gap-3 mb-1">
             <div className="p-0 overflow-hidden rounded-xl w-12 h-12 border border-brand-accent/50 shadow-lg shadow-brand-accent/20">
               <img 
-                src="https://raw.githubusercontent.com/BorgeRui/BRC-Conectar/main/logo.png" 
+                src="/logo.svg" 
                 alt="BRC Conectar Logo" 
                 className="w-full h-full object-cover"
-                onError={(e) => {
-                  e.currentTarget.src = "https://picsum.photos/seed/brc-vpn/200";
-                }}
               />
             </div>
             <h1 className="text-2xl font-bold tracking-tight">BRC Conectar <span className="text-brand-accent font-mono text-sm font-normal ml-2">v2.4.0</span></h1>
@@ -675,24 +740,21 @@ export default function App() {
           <p className="text-brand-text-secondary text-sm">{t.military_encryption}</p>
         </div>
         <div className="flex items-center gap-4">
-          <button 
-            onClick={() => setIsDarkMode(!isDarkMode)}
-            className="p-2 hover:bg-brand-text-secondary/10 rounded-full transition-colors text-brand-text-secondary"
-            title={isDarkMode ? t.light_mode : t.dark_mode}
-          >
-            {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-          </button>
           <StatusBadge connected={connected} t={t} />
           <div className="relative">
             <button 
               onClick={() => setShowSettings(!showSettings)}
               className={cn(
-                "p-2 hover:bg-brand-text-secondary/10 rounded-full transition-colors",
-                showSettings ? "text-brand-accent bg-brand-accent/10" : "text-brand-text-secondary"
+                "flex items-center gap-2 px-4 py-2 rounded-lg border transition-all text-sm font-medium",
+                showSettings 
+                  ? "bg-brand-accent/10 border-brand-accent/50 text-brand-accent shadow-[0_0_15px_rgba(var(--brand-accent-rgb),0.15)]" 
+                  : "bg-brand-bg/50 border-brand-text-secondary/20 text-brand-text-secondary hover:bg-brand-text-secondary/10 hover:text-brand-text-primary"
               )}
               title={t.settings}
             >
-              <Settings className="w-5 h-5" />
+              <Settings className="w-4 h-4" />
+              <span className="hidden sm:inline">{t.settings}</span>
+              <ChevronDown className={cn("w-3 h-3 transition-transform", showSettings && "rotate-180")} />
             </button>
             <AnimatePresence>
               {showSettings && (
@@ -709,33 +771,74 @@ export default function App() {
                     </span>
                   </div>
                   
-                  <div className="p-2">
+                  <div className="p-2 border-b border-brand-text-secondary/10">
                     <div className="px-2 py-1 mb-1">
                       <span className="text-[9px] font-mono uppercase tracking-tighter text-brand-text-secondary flex items-center gap-1">
+                        {isDarkMode ? <Moon className="w-3 h-3" /> : <Sun className="w-3 h-3" />}
+                        Tema
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => setIsDarkMode(!isDarkMode)}
+                      className="w-full text-left px-3 py-2 text-[11px] font-mono rounded-md transition-all flex items-center justify-between text-brand-text-secondary hover:bg-brand-text-secondary/10"
+                    >
+                      <span>{isDarkMode ? t.light_mode : t.dark_mode}</span>
+                      <div className={cn(
+                        "w-8 h-4 rounded-full p-0.5 transition-colors",
+                        isDarkMode ? "bg-brand-accent" : "bg-brand-text-secondary/30"
+                      )}>
+                        <div className={cn(
+                          "w-3 h-3 rounded-full bg-white transition-transform",
+                          isDarkMode ? "translate-x-4" : "translate-x-0"
+                        )} />
+                      </div>
+                    </button>
+                  </div>
+
+                  <div className="p-2">
+                    <button
+                      onClick={() => setShowLanguages(!showLanguages)}
+                      className="w-full text-left px-3 py-2 text-[11px] font-mono rounded-md transition-all flex items-center justify-between text-brand-text-secondary hover:bg-brand-text-secondary/10"
+                    >
+                      <span className="flex items-center gap-2">
                         <Languages className="w-3 h-3" />
                         {t.language}
                       </span>
-                    </div>
-                    <div className="grid grid-cols-1 gap-1">
-                      {Object.entries(LANGUAGE_NAMES).map(([code, name]) => (
-                        <button
-                          key={code}
-                          onClick={() => {
-                            setLang(code as Language);
-                            setShowSettings(false);
-                          }}
-                          className={cn(
-                            "w-full text-left px-3 py-1.5 text-[11px] font-mono rounded-md transition-all flex items-center justify-between",
-                            lang === code 
-                              ? "text-brand-accent bg-brand-accent/10" 
-                              : "text-brand-text-secondary hover:bg-brand-text-secondary/10"
-                          )}
+                      <ChevronDown className={cn("w-3 h-3 transition-transform", showLanguages && "rotate-180")} />
+                    </button>
+                    
+                    <AnimatePresence>
+                      {showLanguages && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          className="overflow-hidden"
                         >
-                          {name}
-                          {lang === code && <div className="w-1 h-1 rounded-full bg-brand-accent shadow-[0_0_5px_rgba(100,255,218,0.8)]" />}
-                        </button>
-                      ))}
-                    </div>
+                          <div className="grid grid-cols-1 gap-1 pt-1 pl-2">
+                            {Object.entries(LANGUAGE_NAMES).map(([code, name]) => (
+                              <button
+                                key={code}
+                                onClick={() => {
+                                  setLang(code as Language);
+                                  setShowSettings(false);
+                                  setShowLanguages(false);
+                                }}
+                                className={cn(
+                                  "w-full text-left px-3 py-1.5 text-[11px] font-mono rounded-md transition-all flex items-center justify-between",
+                                  lang === code 
+                                    ? "text-brand-accent bg-brand-accent/10" 
+                                    : "text-brand-text-secondary hover:bg-brand-text-secondary/10"
+                                )}
+                              >
+                                {name}
+                                {lang === code && <div className="w-1 h-1 rounded-full bg-brand-accent shadow-[0_0_5px_rgba(100,255,218,0.8)]" />}
+                              </button>
+                            ))}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
                 </motion.div>
               )}
@@ -745,18 +848,15 @@ export default function App() {
       </header>
 
       {/* Main Grid */}
-      <main className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <main className="flex flex-col lg:grid lg:grid-cols-12 gap-6 flex-1">
         
-        {/* Left Column: Controls & Map */}
-        <motion.div 
+        {/* Connection Panel */}
+        <motion.section 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="lg:col-span-8 flex flex-col gap-6"
+          className="hardware-card p-6 flex flex-col md:flex-row gap-8 items-center lg:col-span-8 order-1"
         >
-          
-          {/* Connection Panel */}
-          <section className="hardware-card p-6 flex flex-col md:flex-row gap-8 items-center">
             <div className="relative">
               <div className={cn(
                 "w-48 h-48 rounded-full flex items-center justify-center border-4 transition-all duration-500",
@@ -827,10 +927,15 @@ export default function App() {
                 <div className="text-xs text-brand-text-secondary font-mono">{connected ? t.protected : t.exposed}</div>
               </div>
             </div>
-          </section>
+        </motion.section>
 
-          {/* Map Section */}
-          <section className="hardware-card p-6">
+        {/* Map Section */}
+        <motion.section 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="hardware-card p-6 lg:col-span-8 order-4"
+        >
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-sm font-mono uppercase tracking-widest flex items-center gap-2">
                 <Globe className="w-4 h-4 text-brand-accent" />
@@ -848,10 +953,15 @@ export default function App() {
               </div>
             </div>
             <NetworkMap selectedServer={connected ? selectedServer : null} isDarkMode={isDarkMode} servers={servers} t={t} />
-          </section>
+        </motion.section>
 
-          {/* Stats Section */}
-          <section className="hardware-card p-6">
+        {/* Stats Section */}
+        <motion.section 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="hardware-card p-6 lg:col-span-8 order-2"
+        >
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-sm font-mono uppercase tracking-widest flex items-center gap-2">
                 <Activity className="w-4 h-4 text-brand-accent" />
@@ -894,19 +1004,15 @@ export default function App() {
                 </AreaChart>
               </ResponsiveContainer>
             </div>
-          </section>
-        </motion.div>
+        </motion.section>
 
-        {/* Right Column: AI Assistant & Servers */}
-        <motion.div 
+        {/* AI Privacy Advisor */}
+        <motion.section 
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="lg:col-span-4 flex flex-col gap-6"
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="hardware-card flex flex-col h-[500px] lg:col-span-4 lg:col-start-9 lg:row-start-3 order-5"
         >
-          
-          {/* AI Privacy Advisor */}
-          <section className="hardware-card flex flex-col h-[500px]">
             <div className="p-4 border-b border-brand-text-secondary/5 flex items-center justify-between">
               <h2 className="text-sm font-mono uppercase tracking-widest flex items-center gap-2">
                 <MessageSquare className="w-4 h-4 text-brand-accent" />
@@ -962,10 +1068,15 @@ export default function App() {
                 </button>
               </div>
             </div>
-          </section>
+        </motion.section>
 
-          {/* Server Selector */}
-          <section className="hardware-card p-6 flex-1">
+        {/* Server Selector */}
+        <motion.section 
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="hardware-card p-6 flex flex-col lg:col-span-4 lg:col-start-9 lg:row-start-1 lg:row-span-2 order-3"
+        >
             <h2 className="text-sm font-mono uppercase tracking-widest flex items-center gap-2 mb-6">
               <Wifi className="w-4 h-4 text-brand-accent" />
               {t.operator}
@@ -987,36 +1098,120 @@ export default function App() {
               ))}
             </div>
 
-            <h2 className="text-sm font-mono uppercase tracking-widest flex items-center gap-2 mb-6">
-              <Server className="w-4 h-4 text-brand-accent" />
-              Seleção de Nó
-            </h2>
-            <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-brand-text-secondary/10">
-              {servers.map((server) => (
-                <button
-                  key={server.id}
-                  onClick={() => setSelectedServer(server)}
-                  className={cn(
-                    "w-full flex items-center justify-between p-3 rounded-lg border transition-all",
-                    selectedServer.id === server.id 
-                      ? "bg-brand-accent/10 border-brand-accent/50 text-brand-accent" 
-                      : "bg-brand-text-secondary/5 border-transparent text-brand-text-secondary hover:bg-brand-text-secondary/10"
-                  )}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className={cn(
-                      "w-2 h-2 rounded-full",
-                      server.load > 80 ? "bg-brand-danger" : server.load > 50 ? "bg-yellow-500" : "bg-brand-success"
-                    )} />
-                    <span className="text-lg">{server.flag}</span>
-                    <span className="text-sm font-medium">{server.name}</span>
-                  </div>
-                  <div className="flex items-center gap-4 font-mono text-[10px]">
-                    <span>{server.latency}MS</span>
-                    <ChevronRight className="w-4 h-4" />
-                  </div>
-                </button>
-              ))}
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-sm font-mono uppercase tracking-widest flex items-center gap-2">
+                <Server className="w-4 h-4 text-brand-accent" />
+                {t.node_selection}
+              </h2>
+            </div>
+            
+            <div className="relative mb-4">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={t.search_nodes}
+                className="w-full bg-brand-bg/50 border border-brand-text-secondary/20 rounded-lg py-2 pl-9 pr-4 text-sm focus:outline-none focus:border-brand-accent transition-colors"
+              />
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-brand-text-secondary" />
+            </div>
+
+            <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-brand-text-secondary/10">
+              {/* Favorites Section */}
+              {favorites.length > 0 && !searchQuery && (
+                <div className="space-y-2">
+                  <h3 className="text-[10px] font-mono uppercase tracking-widest text-brand-text-secondary mb-2 flex items-center gap-1">
+                    <Star className="w-3 h-3 fill-brand-accent text-brand-accent" />
+                    {t.favorites}
+                  </h3>
+                  {servers
+                    .filter(server => favorites.includes(server.id))
+                    .map((server) => (
+                    <button
+                      key={`fav-${server.id}`}
+                      onClick={() => setSelectedServer(server)}
+                      className={cn(
+                        "w-full flex items-center justify-between p-3 rounded-lg border transition-all",
+                        selectedServer.id === server.id 
+                          ? "bg-brand-accent/10 border-brand-accent/50 text-brand-accent" 
+                          : "bg-brand-text-secondary/5 border-transparent text-brand-text-secondary hover:bg-brand-text-secondary/10"
+                      )}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={cn(
+                          "w-2 h-2 rounded-full",
+                          server.load > 80 ? "bg-brand-danger" : server.load > 50 ? "bg-yellow-500" : "bg-brand-success"
+                        )} />
+                        <span className="text-lg">{server.flag}</span>
+                        <span className="text-sm font-medium">{server.name}</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2 font-mono text-[10px]">
+                          <span>{server.latency}MS</span>
+                        </div>
+                        <div 
+                          onClick={(e) => toggleFavorite(e, server.id)}
+                          className="p-1 hover:bg-brand-text-secondary/20 rounded-full transition-colors"
+                        >
+                          <Star className="w-4 h-4 fill-brand-accent text-brand-accent" />
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                  <div className="h-px w-full bg-brand-text-secondary/10 my-4" />
+                </div>
+              )}
+
+              {/* All Servers Section */}
+              <div className="space-y-2">
+                {favorites.length > 0 && !searchQuery && (
+                  <h3 className="text-[10px] font-mono uppercase tracking-widest text-brand-text-secondary mb-2">
+                    {t.all_nodes}
+                  </h3>
+                )}
+                {servers
+                  .filter(server => 
+                    server.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                    server.id.toLowerCase().includes(searchQuery.toLowerCase())
+                  )
+                  .map((server) => (
+                  <button
+                    key={server.id}
+                    onClick={() => setSelectedServer(server)}
+                    className={cn(
+                      "w-full flex items-center justify-between p-3 rounded-lg border transition-all",
+                      selectedServer.id === server.id 
+                        ? "bg-brand-accent/10 border-brand-accent/50 text-brand-accent" 
+                        : "bg-brand-text-secondary/5 border-transparent text-brand-text-secondary hover:bg-brand-text-secondary/10"
+                    )}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={cn(
+                        "w-2 h-2 rounded-full",
+                        server.load > 80 ? "bg-brand-danger" : server.load > 50 ? "bg-yellow-500" : "bg-brand-success"
+                      )} />
+                      <span className="text-lg">{server.flag}</span>
+                      <span className="text-sm font-medium">{server.name}</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2 font-mono text-[10px]">
+                        <span>{server.latency}MS</span>
+                      </div>
+                      <div 
+                        onClick={(e) => toggleFavorite(e, server.id)}
+                        className="p-1 hover:bg-brand-text-secondary/20 rounded-full transition-colors"
+                      >
+                        <Star className={cn(
+                          "w-4 h-4 transition-colors",
+                          favorites.includes(server.id) 
+                            ? "fill-brand-accent text-brand-accent" 
+                            : "text-brand-text-secondary hover:text-brand-accent"
+                        )} />
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
             </div>
             <div className="mt-6 pt-6 border-t border-brand-text-secondary/5">
               <div className="flex items-center justify-between text-[10px] font-mono text-brand-text-secondary uppercase">
@@ -1027,9 +1222,8 @@ export default function App() {
                 <div className="h-full bg-brand-accent w-[42%]" />
               </div>
             </div>
-          </section>
+        </motion.section>
 
-        </motion.div>
       </main>
 
       {/* Footer / Status Bar */}
@@ -1053,7 +1247,7 @@ export default function App() {
           </div>
         </div>
         <div className="flex items-center gap-4">
-          <span>{t.session}: {connected ? "00:14:22" : "00:00:00"}</span>
+          <span>{t.session}: {connected ? new Date(connectionDuration * 1000).toISOString().substring(11, 19) : "00:00:00"}</span>
           <div className="w-px h-3 bg-brand-text-secondary/10" />
           <span>{t.data}: {connected ? "1.2 GB" : "0 B"}</span>
         </div>

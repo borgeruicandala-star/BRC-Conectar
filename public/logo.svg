@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#020617" />
+    </linearGradient>
+    <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#a855f7" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Shield Background -->
+  <path d="M256 24C150 24 64 48 64 48V224C64 350 148 456 256 488C364 456 448 350 448 224V48C448 48 362 24 256 24Z" fill="url(#bg)" stroke="#cbd5e1" stroke-width="8"/>
+  
+  <!-- BC Letters -->
+  <text x="256" y="290" font-family="Arial, sans-serif" font-weight="900" font-size="200" fill="url(#textGrad)" text-anchor="middle" letter-spacing="-15">BC</text>
+  
+  <!-- Nodes and Connections -->
+  <g stroke="#ffffff" stroke-width="6" stroke-linecap="round">
+    <line x1="160" y1="140" x2="256" y2="240" />
+    <line x1="256" y1="240" x2="380" y2="170" />
+    <line x1="150" y1="260" x2="256" y2="240" />
+    <line x1="256" y1="240" x2="300" y2="340" />
+    <line x1="140" y1="320" x2="256" y2="240" />
+  </g>
+  
+  <g fill="#ffffff" filter="url(#glow)">
+    <circle cx="160" cy="140" r="12" />
+    <circle cx="380" cy="170" r="12" />
+    <circle cx="150" cy="260" r="12" />
+    <circle cx="300" cy="340" r="12" />
+    <circle cx="140" cy="320" r="12" />
+    <circle cx="256" cy="240" r="12" />
+  </g>
+  
+  <!-- Text -->
+  <text x="256" y="410" font-family="Arial, sans-serif" font-weight="bold" font-size="64" fill="#ffffff" text-anchor="middle">BRC</text>
+  <text x="256" y="450" font-family="Arial, sans-serif" font-weight="normal" font-size="32" fill="#ffffff" text-anchor="middle">Conectar</text>
+</svg>
