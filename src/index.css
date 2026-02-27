@@ -2,7 +2,7 @@
 @import "tailwindcss";
 
 :root {
-  --brand-bg: #020c1b;
+  --brand-bg: #121212;
   --brand-surface: #112240;
   --brand-accent: #64ffda;
   --brand-success: #00ff00;
@@ -11,18 +11,22 @@
   --brand-text-secondary: #8892b0;
   --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   --card-border: rgba(255, 255, 255, 0.05);
+  --brand-surface-button: rgba(255, 255, 255, 0.05);
+  --brand-surface-button-hover: rgba(255, 255, 255, 0.1);
 }
 
 .light {
-  --brand-bg: #f0f4f8;
+  --brand-bg: #121212;
   --brand-surface: #ffffff;
   --brand-accent: #0070f3;
   --brand-success: #10b981;
   --brand-danger: #ef4444;
-  --brand-text-primary: #1a202c;
-  --brand-text-secondary: #4a5568;
+  --brand-text-primary: #e6f1ff;
+  --brand-text-secondary: #8892b0;
   --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   --card-border: rgba(0, 0, 0, 0.05);
+  --brand-surface-button: rgba(0, 0, 0, 0.03);
+  --brand-surface-button-hover: rgba(0, 0, 0, 0.06);
 }
 
 @theme {
