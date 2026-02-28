@@ -825,7 +825,10 @@ export default function App() {
   }, [lang]);
 
   // Initialize Gemini
-  const ai = useMemo(() => new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' }), []);
+  const ai = useMemo(() => {
+    const key = process.env.GEMINI_API_KEY || (typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env.VITE_GEMINI_API_KEY : '');
+    return new GoogleGenAI({ apiKey: key || '' });
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
