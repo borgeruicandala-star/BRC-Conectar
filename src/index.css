@@ -16,13 +16,13 @@
 }
 
 .light {
-  --brand-bg: #121212;
+  --brand-bg: #f8fafc;
   --brand-surface: #ffffff;
   --brand-accent: #0070f3;
   --brand-success: #10b981;
   --brand-danger: #ef4444;
-  --brand-text-primary: #e6f1ff;
-  --brand-text-secondary: #8892b0;
+  --brand-text-primary: #0f172a;
+  --brand-text-secondary: #64748b;
   --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   --card-border: rgba(0, 0, 0, 0.05);
   --brand-surface-button: rgba(0, 0, 0, 0.03);

@@ -40,7 +40,8 @@ import {
   MapPin,
   Plane,
   Clock,
-  Info
+  Info,
+  Palette
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
@@ -697,7 +698,7 @@ const BrcLogo = ({ size = "md", connected = false }: { size?: "sm" | "md" | "lg"
             className={cn(
               s.bars,
               "rounded-full transition-colors duration-500",
-              connected ? "bg-brand-success shadow-[0_0_15px_rgba(34,197,94,0.5)]" : "bg-white"
+              connected ? "bg-brand-success shadow-[0_0_15px_rgba(34,197,94,0.5)]" : "bg-white/20"
             )}
           />
         ))}
@@ -736,14 +737,15 @@ export default function App() {
   const [lang, setLang] = useState<Language>('pt');
   const [connected, setConnected] = useState(false);
   const [connecting, setConnecting] = useState(false);
-  const [servers, setServers] = useState<ServerLocation[]>(INITIAL_SERVERS);
-  const [selectedServer, setSelectedServer] = useState<ServerLocation>(INITIAL_SERVERS[0]);
+  const [servers, setServers] = useState<ServerLocation[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedServer, setSelectedServer] = useState<ServerLocation | null>(null);
   const [selectedProvider, setSelectedProvider] = useState(PROVIDERS[0]);
   const [trafficData, setTrafficData] = useState<TrafficData[]>([]);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [userInput, setUserInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('dark');
   const [showSettings, setShowSettings] = useState(false);
   const [showSideMenu, setShowSideMenu] = useState(false);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
@@ -751,6 +753,7 @@ export default function App() {
   const [showAdvisorModal, setShowAdvisorModal] = useState(false);
   const [showServerSelector, setShowServerSelector] = useState(false);
   const [showSplitTunnelModal, setShowSplitTunnelModal] = useState(false);
+  const [showThemeMenu, setShowThemeMenu] = useState(false);
   const [airplaneMode, setAirplaneMode] = useState(false);
   const [splitTunnelEnabled, setSplitTunnelEnabled] = useState(false);
   const [selectedApps, setSelectedApps] = useState<string[]>(AVAILABLE_APPS.map(a => a.id));
@@ -825,12 +828,70 @@ export default function App() {
   const ai = useMemo(() => new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' }), []);
 
   useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.remove('light');
-    } else {
-      document.documentElement.classList.add('light');
+    const fetchData = async () => {
+      try {
+        const [serversRes, statusRes] = await Promise.all([
+          fetch('/api/servers'),
+          fetch('/api/status')
+        ]);
+        
+        const serversData = await serversRes.json();
+        const statusData = await statusRes.json();
+        
+        setServers(serversData);
+        if (statusData.connected) {
+          setConnected(true);
+          setSelectedServer(statusData.server);
+          setPublicIp(statusData.ip);
+          setConnectionStartTime(Date.now() - (parseUptime(statusData.uptime) * 1000));
+        } else {
+          // Auto-connect logic if not connected
+          const bestServer = serversData.reduce((prev: any, curr: any) => {
+            const prevScore = prev.latency * (1 + prev.load / 100);
+            const currScore = curr.latency * (1 + curr.load / 100);
+            return currScore < prevScore ? curr : prev;
+          }, serversData[0]);
+          setSelectedServer(bestServer);
+        }
+      } catch (error) {
+        console.error("Fetch error:", error);
+        setServers(INITIAL_SERVERS);
+        setSelectedServer(INITIAL_SERVERS[0]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const parseUptime = (uptime: string) => {
+    const [hrs, mins, secs] = uptime.split(':').map(Number);
+    return (hrs * 3600) + (mins * 60) + secs;
+  };
+
+  useEffect(() => {
+    const root = document.documentElement;
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    
+    const applyTheme = () => {
+      const isDark = theme === 'dark' || (theme === 'system' && mediaQuery.matches);
+      if (isDark) {
+        root.classList.remove('light');
+      } else {
+        root.classList.add('light');
+      }
+    };
+
+    applyTheme();
+
+    if (theme === 'system') {
+      mediaQuery.addEventListener('change', applyTheme);
+      return () => mediaQuery.removeEventListener('change', applyTheme);
     }
-  }, [isDarkMode]);
+  }, [theme]);
+
+  const isDarkMode = theme === 'dark' || (theme === 'system' && typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches);
 
   useEffect(() => {
     // Generate mock traffic data
@@ -849,26 +910,6 @@ export default function App() {
     }, 2000);
     return () => clearInterval(interval);
   }, [connected]);
-
-  useEffect(() => {
-    // Auto-connect on first load: find server with lowest latency and load
-    const bestServer = INITIAL_SERVERS.reduce((prev, curr) => {
-      const prevScore = prev.latency * (1 + prev.load / 100);
-      const currScore = curr.latency * (1 + curr.load / 100);
-      return currScore < prevScore ? curr : prev;
-    });
-    
-    setSelectedServer(bestServer);
-    
-    setConnecting(true);
-    const timer = setTimeout(() => {
-      setConnecting(false);
-      setConnected(true);
-      setConnectionStartTime(Date.now());
-    }, 2000);
-    
-    return () => clearTimeout(timer);
-  }, []);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -973,10 +1014,32 @@ export default function App() {
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#121212] text-white">
+        <BrcLogo size="lg" connected={true} />
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="mt-8 flex flex-col items-center gap-2"
+        >
+          <div className="text-brand-accent font-mono text-xs tracking-widest uppercase">Initializing Secure Tunnel</div>
+          <div className="w-48 h-1 bg-white/5 rounded-full overflow-hidden">
+            <motion.div 
+              initial={{ x: "-100%" }}
+              animate={{ x: "100%" }}
+              transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
+              className="w-full h-full bg-brand-accent"
+            />
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
+
   return (
     <div className={cn(
-      "min-h-screen flex flex-col bg-brand-bg text-brand-text-primary font-sans selection:bg-brand-accent/30",
-      !isDarkMode && "light"
+      "min-h-screen flex flex-col bg-[#121212] text-white font-sans selection:bg-brand-accent/30"
     )}>
       {/* Header */}
       <header className="px-4 py-3 flex items-center justify-between bg-[#1a1a1a] border-b border-white/5 sticky top-0 z-[60]">
@@ -1022,19 +1085,22 @@ export default function App() {
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed top-0 left-0 bottom-0 w-72 bg-[#1a1a1a] z-[210] border-r border-white/10 shadow-2xl flex flex-col"
+              className={cn(
+                "fixed top-0 left-0 bottom-0 w-72 bg-brand-bg z-[210] border-r border-black/5 dark:border-white/10 shadow-2xl flex flex-col",
+                !isDarkMode && "light"
+              )}
             >
-              <div className="p-6 border-b border-white/5 flex items-center justify-between">
+              <div className="p-6 border-b border-black/5 dark:border-white/5 flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <BrcLogo size="sm" connected={connected} />
                   <div className="flex flex-col">
-                    <span className="font-bold tracking-tight text-white">BRC Conectar</span>
+                    <span className="font-bold tracking-tight text-brand-text-primary">BRC Conectar</span>
                     <span className="text-[8px] font-mono text-brand-accent uppercase tracking-widest">Secure Tunnel</span>
                   </div>
                 </div>
                 <button 
                   onClick={() => setShowSideMenu(false)}
-                  className="p-1 hover:bg-white/5 rounded-full transition-colors"
+                  className="p-1 hover:bg-black/5 dark:hover:bg-white/5 rounded-full transition-colors"
                 >
                   <ChevronDown className="w-5 h-5 rotate-90" />
                 </button>
@@ -1044,16 +1110,59 @@ export default function App() {
                 <div className="px-2 py-4">
                   <h3 className="text-[10px] font-mono uppercase tracking-widest text-brand-text-secondary mb-4">Menu</h3>
                   
-                  <div className="space-y-1">
+                  <div className="space-y-0 divide-y divide-black/5 dark:divide-white/5">
+                    <div className="flex flex-col">
+                      <button
+                        onClick={() => setShowThemeMenu(!showThemeMenu)}
+                        className="w-full flex items-center justify-between gap-3 p-4 hover:bg-black/5 dark:hover:bg-white/5 transition-all text-brand-text-secondary group"
+                      >
+                        <div className="flex items-center gap-3">
+                          <Palette className="w-5 h-5 text-brand-accent group-hover:scale-110 transition-transform" />
+                          <span className="text-sm font-medium">Tema</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-mono uppercase">
+                            {theme === 'dark' ? t.dark_mode : theme === 'light' ? t.light_mode : 'Sistema'}
+                          </span>
+                          <ChevronDown className={cn("w-4 h-4 transition-transform", showThemeMenu && "rotate-180")} />
+                        </div>
+                      </button>
+
+                      <AnimatePresence>
+                        {showThemeMenu && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="overflow-hidden bg-black/5 dark:bg-white/5"
+                          >
+                            {(['light', 'dark', 'system'] as const).map((tOption) => (
+                              <button
+                                key={tOption}
+                                onClick={() => setTheme(tOption)}
+                                className={cn(
+                                  "w-full flex items-center justify-between px-12 py-3 text-xs transition-colors hover:text-brand-accent",
+                                  theme === tOption ? "text-brand-accent font-bold" : "text-brand-text-secondary"
+                                )}
+                              >
+                                <span>{tOption === 'dark' ? t.dark_mode : tOption === 'light' ? t.light_mode : 'Sistema'}</span>
+                                {theme === tOption && <div className="w-1.5 h-1.5 rounded-full bg-brand-accent shadow-[0_0_8px_rgba(var(--brand-accent-rgb),0.5)]" />}
+                              </button>
+                            ))}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+
                     <button
-                      onClick={() => setIsDarkMode(!isDarkMode)}
-                      className="w-full flex items-center justify-between gap-3 p-3 rounded-xl hover:bg-white/5 transition-all text-brand-text-secondary group"
+                      onClick={() => {
+                        setShowServerSelector(true);
+                        setShowSideMenu(false);
+                      }}
+                      className="w-full flex items-center gap-3 p-4 hover:bg-black/5 dark:hover:bg-white/5 transition-all text-brand-text-secondary group"
                     >
-                      <div className="flex items-center gap-3">
-                        {isDarkMode ? <Moon className="w-5 h-5 text-brand-accent group-hover:scale-110 transition-transform" /> : <Sun className="w-5 h-5 text-brand-accent group-hover:scale-110 transition-transform" />}
-                        <span className="text-sm font-medium">Tema</span>
-                      </div>
-                      <span className="text-[10px] font-mono uppercase">{isDarkMode ? t.dark_mode : t.light_mode}</span>
+                      <Server className="w-5 h-5 text-brand-accent group-hover:scale-110 transition-transform" />
+                      <span className="text-sm font-bold text-brand-text-primary dark:text-brand-text-secondary">{t.node_selection}</span>
                     </button>
 
                     <button
@@ -1061,7 +1170,7 @@ export default function App() {
                         setShowLanguages(true);
                         setShowSideMenu(false);
                       }}
-                      className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-all text-brand-text-secondary group"
+                      className="w-full flex items-center gap-3 p-4 hover:bg-black/5 dark:hover:bg-white/5 transition-all text-brand-text-secondary group"
                     >
                       <Languages className="w-5 h-5 text-brand-accent group-hover:scale-110 transition-transform" />
                       <span className="text-sm font-medium">{t.language}</span>
@@ -1072,7 +1181,7 @@ export default function App() {
                         setShowAdvisorModal(true);
                         setShowSideMenu(false);
                       }}
-                      className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-all text-brand-text-secondary group"
+                      className="w-full flex items-center gap-3 p-4 hover:bg-black/5 dark:hover:bg-white/5 transition-all text-brand-text-secondary group"
                     >
                       <MessageSquare className="w-5 h-5 text-brand-accent group-hover:scale-110 transition-transform" />
                       <span className="text-sm font-medium">{t.privacy_advisor}</span>
@@ -1083,7 +1192,7 @@ export default function App() {
                         setShowPrivacyModal(true);
                         setShowSideMenu(false);
                       }}
-                      className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-all text-brand-text-secondary group"
+                      className="w-full flex items-center gap-3 p-4 hover:bg-black/5 dark:hover:bg-white/5 transition-all text-brand-text-secondary group"
                     >
                       <ShieldCheck className="w-5 h-5 text-brand-accent group-hover:scale-110 transition-transform" />
                       <span className="text-sm font-medium">{t.privacy_terms}</span>
@@ -1092,7 +1201,7 @@ export default function App() {
                     <a
                       href="mailto:borgeruicandala@gmail.com"
                       onClick={() => setShowSideMenu(false)}
-                      className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-all text-brand-text-secondary group"
+                      className="w-full flex items-center gap-3 p-4 hover:bg-black/5 dark:hover:bg-white/5 transition-all text-brand-text-secondary group"
                     >
                       <Mail className="w-5 h-5 text-brand-accent group-hover:scale-110 transition-transform" />
                       <span className="text-sm font-medium">{t.support}</span>
@@ -1121,7 +1230,7 @@ export default function App() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setShowPrivacyModal(false)}
-              className="absolute inset-0 bg-black/90 backdrop-blur-md"
+              className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             />
             <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
@@ -1319,12 +1428,12 @@ export default function App() {
                 <MapPin className="w-5 h-5 text-brand-text-secondary" />
               </div>
               <div className="flex flex-col">
-                <span className="text-base font-medium">{selectedServer.name.split(' (')[0]}</span>
-                <span className="text-xs text-brand-text-secondary">{selectedServer.name.includes('(') ? selectedServer.name.split('(')[1].replace(')', '') : 'Global Node'}</span>
+                <span className="text-base font-medium">{selectedServer?.name.split(' (')[0] || '---'}</span>
+                <span className="text-xs text-brand-text-secondary">{selectedServer?.name.includes('(') ? selectedServer?.name.split('(')[1].replace(')', '') : 'Global Node'}</span>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <span className="text-2xl">{selectedServer.flag}</span>
+              <span className="text-2xl">{selectedServer?.flag || '🌐'}</span>
               <ChevronsRight className="w-5 h-5 text-brand-text-secondary" />
             </div>
           </motion.div>
@@ -1402,14 +1511,6 @@ export default function App() {
                   </span>
                 </div>
               </div>
-              <motion.button 
-                onClick={changeIp}
-                whileHover={{ rotate: 90 }} 
-                whileTap={{ scale: 0.9 }}
-                className="p-1 text-brand-accent hover:bg-white/5 rounded-full"
-              >
-                <RefreshCw className="w-5 h-5" />
-              </motion.button>
             </motion.div>
 
             {/* Airplane Mode */}
@@ -1545,7 +1646,7 @@ export default function App() {
                       "text-[10px] font-mono font-medium",
                       connected ? "text-brand-success" : "text-brand-text-secondary/40"
                     )}>
-                      {connected ? `${selectedServer.latency}ms` : "---"}
+                      {connected && selectedServer ? `${selectedServer.latency}ms` : "---"}
                     </span>
                   </div>
                   <div className={cn(
@@ -1594,7 +1695,7 @@ export default function App() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setShowServerSelector(false)}
-              className="absolute inset-0 bg-black/80 backdrop-blur-md"
+              className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             />
             <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
@@ -1603,7 +1704,7 @@ export default function App() {
               className="relative w-full max-w-md hardware-card flex flex-col h-[500px] shadow-2xl"
             >
               <div className="p-4 border-b border-brand-text-secondary/10 flex items-center justify-between bg-brand-accent/5">
-                <h2 className="text-sm font-mono uppercase tracking-widest flex items-center gap-2">
+                <h2 className="text-sm font-bold font-mono uppercase tracking-widest flex items-center gap-2 text-brand-text-primary dark:text-white">
                   <Server className="w-4 h-4 text-brand-accent" />
                   {t.node_selection}
                 </h2>
@@ -1691,15 +1792,15 @@ export default function App() {
                           }}
                           className={cn(
                             "w-full flex items-center justify-between p-3 rounded-xl border transition-all",
-                            selectedServer.id === server.id 
+                            selectedServer?.id === server.id 
                               ? "bg-brand-accent/10 border-brand-accent/50 text-brand-accent" 
                               : "border-transparent text-brand-text-primary"
                           )}
-                          style={selectedServer.id !== server.id ? {
+                          style={selectedServer?.id !== server.id ? {
                             backgroundColor: 'var(--brand-surface-button)',
                           } : {}}
-                           onMouseEnter={(e) => { if (selectedServer.id !== server.id) e.currentTarget.style.backgroundColor = 'var(--brand-surface-button-hover)'; }}
-                          onMouseLeave={(e) => { if (selectedServer.id !== server.id) e.currentTarget.style.backgroundColor = 'var(--brand-surface-button)'; }}
+                           onMouseEnter={(e) => { if (selectedServer?.id !== server.id) e.currentTarget.style.backgroundColor = 'var(--brand-surface-button-hover)'; }}
+                          onMouseLeave={(e) => { if (selectedServer?.id !== server.id) e.currentTarget.style.backgroundColor = 'var(--brand-surface-button)'; }}
                         >
                           <div className="flex items-center gap-3">
                             <div className={cn(
@@ -1748,15 +1849,15 @@ export default function App() {
                         }}
                         className={cn(
                           "w-full flex items-center justify-between p-3 rounded-xl border transition-all",
-                          selectedServer.id === server.id 
+                          selectedServer?.id === server.id 
                             ? "bg-brand-accent/10 border-brand-accent/50 text-brand-accent" 
                             : "border-transparent text-brand-text-primary"
                         )}
-                        style={selectedServer.id !== server.id ? {
+                        style={selectedServer?.id !== server.id ? {
                           backgroundColor: 'var(--brand-surface-button)',
                         } : {}}
-                         onMouseEnter={(e) => { if (selectedServer.id !== server.id) e.currentTarget.style.backgroundColor = 'var(--brand-surface-button-hover)'; }}
-                        onMouseLeave={(e) => { if (selectedServer.id !== server.id) e.currentTarget.style.backgroundColor = 'var(--brand-surface-button)'; }}
+                         onMouseEnter={(e) => { if (selectedServer?.id !== server.id) e.currentTarget.style.backgroundColor = 'var(--brand-surface-button-hover)'; }}
+                        onMouseLeave={(e) => { if (selectedServer?.id !== server.id) e.currentTarget.style.backgroundColor = 'var(--brand-surface-button)'; }}
                       >
                         <div className="flex items-center gap-3">
                           <div className={cn(
@@ -1802,7 +1903,7 @@ export default function App() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setShowSplitTunnelModal(false)}
-              className="absolute inset-0 bg-black/80 backdrop-blur-md"
+              className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             />
             <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
@@ -1811,7 +1912,7 @@ export default function App() {
               className="relative w-full max-w-md hardware-card flex flex-col h-[550px] shadow-2xl"
             >
               <div className="p-4 border-b border-brand-text-secondary/10 flex items-center justify-between bg-brand-accent/5">
-                <h2 className="text-sm font-mono uppercase tracking-widest flex items-center gap-2">
+                <h2 className="text-sm font-bold font-mono uppercase tracking-widest flex items-center gap-2 text-brand-text-primary dark:text-white">
                   <GitFork className="w-4 h-4 text-brand-accent" />
                   {t.tunel_dividido}
                 </h2>
@@ -1916,7 +2017,7 @@ export default function App() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setShowAdvisorModal(false)}
-              className="absolute inset-0 bg-black/80 backdrop-blur-md"
+              className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             />
             <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
@@ -1925,7 +2026,7 @@ export default function App() {
               className="relative w-full max-w-2xl hardware-card flex flex-col h-[600px] shadow-2xl border-brand-accent/20"
             >
               <div className="p-4 border-b border-brand-text-secondary/10 flex items-center justify-between bg-brand-accent/5">
-                <h2 className="text-sm font-mono uppercase tracking-widest flex items-center gap-2">
+                <h2 className="text-sm font-bold font-mono uppercase tracking-widest flex items-center gap-2 text-brand-text-primary dark:text-white">
                   <MessageSquare className="w-4 h-4 text-brand-accent" />
                   {t.privacy_advisor}
                 </h2>
